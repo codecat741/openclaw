@@ -67,7 +67,7 @@ function shouldSuppressResolvedRuntimeApiKeyForHeaderAuth(
   if (!hasAuthorizationHeader || !source) {
     return false;
   }
-  return source.startsWith("profile:") || source.startsWith("env:");
+  return /^profile:|^(?:shell )?env(?::|$)/.test(source);
 }
 
 export async function resolveLmstudioConfiguredApiKey(params: {
