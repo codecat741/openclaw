@@ -221,7 +221,7 @@ async function writeGeminiSystemSettings(
   mergedConfig: BundleMcpConfig,
   inheritedEnv: Record<string, string> | undefined,
 ): Promise<{ env: Record<string, string>; cleanup: () => Promise<void> }> {
-  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-gemini-mcp-"));
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "susan-gemini-mcp-"));
   const settingsPath = path.join(tempDir, "settings.json");
   const existingSettingsPath =
     inheritedEnv?.GEMINI_CLI_SYSTEM_SETTINGS_PATH ?? process.env.GEMINI_CLI_SYSTEM_SETTINGS_PATH;
@@ -289,7 +289,7 @@ async function prepareModeSpecificBundleMcpConfig(params: {
     };
   }
 
-  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-cli-mcp-"));
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "susan-cli-mcp-"));
   const mcpConfigPath = path.join(tempDir, "mcp.json");
   await fs.writeFile(mcpConfigPath, serializedConfig, "utf-8");
   return {

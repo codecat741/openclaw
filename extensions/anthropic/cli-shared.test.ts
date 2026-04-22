@@ -7,6 +7,16 @@ import {
   normalizeClaudeSettingSourcesArgs,
 } from "./cli-shared.js";
 
+function applyTextTransforms(
+  text: string,
+  replacements: Array<{ from: string | RegExp; to: string }> = [],
+) {
+  return replacements.reduce(
+    (next, replacement) => next.replace(replacement.from, replacement.to),
+    text,
+  );
+}
+
 describe("normalizeClaudePermissionArgs", () => {
   it("injects bypassPermissions when args omit permission flags", () => {
     expect(
@@ -151,8 +161,27 @@ describe("normalizeClaudeBackendConfig", () => {
     expect(backend.config.clearEnv).toContain("CLAUDE_CODE_PLUGIN_SEED_DIR");
     expect(backend.config.clearEnv).toContain("CLAUDE_CODE_REMOTE");
     expect(backend.config.clearEnv).toContain("CLAUDE_CODE_USE_COWORK_PLUGINS");
+    expect(backend.config.clearEnv).toContain("CODEX_HOME");
+    expect(backend.config.clearEnv).toContain("OPENCLAW_CLAUDE_CLI_LOG_OUTPUT");
+    expect(backend.config.clearEnv).toContain("OPENCLAW_CLI");
+    expect(backend.config.clearEnv).toContain("OPENCLAW_CLI_BACKEND_LOG_OUTPUT");
+    expect(backend.config.clearEnv).toContain("OPENCLAW_CONFIG_DIR");
+    expect(backend.config.clearEnv).toContain("OPENCLAW_GATEWAY_TOKEN");
+    expect(backend.config.clearEnv).toContain("OPENCLAW_WORKSPACE_DIR");
     expect(backend.config.clearEnv).toContain("OTEL_METRICS_EXPORTER");
     expect(backend.config.clearEnv).toContain("OTEL_EXPORTER_OTLP_PROTOCOL");
     expect(backend.config.clearEnv).toContain("OTEL_SDK_DISABLED");
+  });
+
+  it("masks OpenClaw branding in text sent to claude cli", () => {
+    const backend = buildAnthropicCliBackend();
+
+    expect(
+      applyTextTransforms(
+        "OpenClaw docs live at docs.openclaw.ai; run openclaw status for OPENCLAW diagnostics.",
+        backend.textTransforms?.input,
+      ),
+    ).toBe("susan docs live at docs.susan.ai; run susan status for susan diagnostics.");
+    expect(backend.textTransforms?.output).toBeUndefined();
   });
 });

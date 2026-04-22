@@ -143,6 +143,7 @@ describe("anthropic provider replay hooks", () => {
     });
     expect(next?.agents?.defaults?.models).toMatchObject({
       "claude-cli/claude-sonnet-4-6": {},
+      "claude-cli/claude-opus-4-7": {},
       "claude-cli/claude-opus-4-6": {},
       "claude-cli/claude-opus-4-5": {},
       "claude-cli/claude-sonnet-4-5": {},

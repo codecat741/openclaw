@@ -290,6 +290,9 @@ export async function executePreparedCliRun(
           // Anthropic's separate host-managed usage tier instead of normal CLI
           // subscription behavior.
           delete next["CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST"];
+          if (backend.clearEnv?.includes("OPENCLAW_CLI")) {
+            delete next["OPENCLAW_CLI"];
+          }
 
           return next;
         })();

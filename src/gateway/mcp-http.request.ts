@@ -48,6 +48,14 @@ function rejectsBrowserLoopbackRequest(req: IncomingMessage): boolean {
   }).ok;
 }
 
+function getRenamedMcpHeader(
+  req: IncomingMessage,
+  susanHeader: string,
+  legacyOpenClawHeader: string,
+): string | undefined {
+  return getHeader(req, susanHeader) ?? getHeader(req, legacyOpenClawHeader);
+}
+
 export function validateMcpLoopbackRequest(params: {
   req: IncomingMessage;
   res: ServerResponse;
@@ -126,13 +134,17 @@ export function resolveMcpRequestContext(
   cfg: OpenClawConfig,
 ): McpRequestContext {
   const senderIsOwnerRaw = normalizeOptionalLowercaseString(
-    getHeader(req, "x-openclaw-sender-is-owner"),
+    getRenamedMcpHeader(req, "x-susan-sender-is-owner", "x-openclaw-sender-is-owner"),
   );
   return {
     sessionKey: resolveScopedSessionKey(cfg, getHeader(req, "x-session-key")),
     messageProvider:
-      normalizeMessageChannel(getHeader(req, "x-openclaw-message-channel")) ?? undefined,
-    accountId: normalizeOptionalString(getHeader(req, "x-openclaw-account-id")),
+      normalizeMessageChannel(
+        getRenamedMcpHeader(req, "x-susan-message-channel", "x-openclaw-message-channel"),
+      ) ?? undefined,
+    accountId: normalizeOptionalString(
+      getRenamedMcpHeader(req, "x-susan-account-id", "x-openclaw-account-id"),
+    ),
     senderIsOwner:
       senderIsOwnerRaw === "true" ? true : senderIsOwnerRaw === "false" ? false : undefined,
   };

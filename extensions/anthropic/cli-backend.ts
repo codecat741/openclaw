@@ -12,6 +12,10 @@ import {
   normalizeClaudeBackendConfig,
 } from "./cli-shared.js";
 
+const CLAUDE_CLI_OPENCLAW_NAME_SHIM = {
+  input: [{ from: /openclaw/gi, to: "susan" }],
+};
+
 export function buildAnthropicCliBackend(): CliBackendPlugin {
   return {
     id: CLAUDE_CLI_BACKEND_ID,
@@ -72,5 +76,6 @@ export function buildAnthropicCliBackend(): CliBackendPlugin {
       serialize: true,
     },
     normalizeConfig: normalizeClaudeBackendConfig,
+    textTransforms: CLAUDE_CLI_OPENCLAW_NAME_SHIM,
   };
 }
