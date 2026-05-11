@@ -47,7 +47,11 @@ import { buildSystemPromptReport } from "../system-prompt-report.js";
 import { appendModelIdentitySystemPrompt } from "../system-prompt.js";
 import { redactRunIdentifier, resolveRunWorkspaceDir } from "../workspace-run.js";
 import { prepareCliBundleMcpConfig } from "./bundle-mcp.js";
-import { buildCliAgentSystemPrompt, normalizeCliModel } from "./helpers.js";
+import {
+  buildCliAgentSystemPrompt,
+  normalizeCliModel,
+  sanitizeCliPromptBranding,
+} from "./helpers.js";
 import { cliBackendLog } from "./log.js";
 import {
   buildCliSessionHistoryPrompt,
@@ -436,6 +440,14 @@ export async function prepareCliRunContext(
     systemPrompt: applyPluginTextReplacements(systemPrompt, backendResolved.textTransforms?.input),
     model: modelDisplay,
   });
+  systemPrompt = sanitizeCliPromptBranding(systemPrompt);
+  preparedPrompt = sanitizeCliPromptBranding(preparedPrompt);
+  const sanitizedOpenClawHistoryPrompt = openClawHistoryPrompt
+    ? sanitizeCliPromptBranding(openClawHistoryPrompt)
+    : undefined;
+  const sanitizedHeartbeatPrompt = heartbeatPrompt
+    ? sanitizeCliPromptBranding(heartbeatPrompt)
+    : undefined;
   const systemPromptReport = buildSystemPromptReport({
     source: "run",
     generatedAt: Date.now(),
@@ -472,8 +484,10 @@ export async function prepareCliRunContext(
     systemPrompt,
     systemPromptReport,
     bootstrapPromptWarningLines: bootstrapPromptWarning.lines,
-    ...(openClawHistoryPrompt ? { openClawHistoryPrompt } : {}),
-    heartbeatPrompt,
+    ...(sanitizedOpenClawHistoryPrompt
+      ? { openClawHistoryPrompt: sanitizedOpenClawHistoryPrompt }
+      : {}),
+    heartbeatPrompt: sanitizedHeartbeatPrompt,
     authEpoch,
     authEpochVersion: CLI_AUTH_EPOCH_VERSION,
     extraSystemPromptHash,

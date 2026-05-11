@@ -9,6 +9,7 @@ import {
   loadPromptRefImages,
   prepareCliPromptImagePayload,
   resolveCliRunQueueKey,
+  sanitizeCliPromptBranding,
   writeCliImages,
   writeCliSystemPromptFile,
 } from "./cli-runner/helpers.js";
@@ -198,6 +199,16 @@ describe("buildCliArgs", () => {
       "--model",
       "gemini-3.1-pro-preview",
     ]);
+  });
+});
+
+describe("sanitizeCliPromptBranding", () => {
+  it("replaces OpenClaw mentions before prompts are handed to CLI backends", () => {
+    expect(
+      sanitizeCliPromptBranding(
+        "OpenClaw should not leak; openclaw and OPENCLAW should all say Sarah.",
+      ),
+    ).toBe("Sarah should not leak; Sarah and Sarah should all say Sarah.");
   });
 });
 

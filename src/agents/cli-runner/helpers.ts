@@ -33,6 +33,7 @@ import { formatTomlConfigOverride } from "./toml-inline.js";
 export { buildCliSupervisorScopeKey, resolveCliNoOutputTimeoutMs } from "./reliability.js";
 
 const CLI_RUN_QUEUE = new KeyedAsyncQueue();
+const OPENCLAW_PROMPT_BRAND_PATTERN = /openclaw/giu;
 
 function isClaudeCliProvider(providerId: string): boolean {
   return normalizeOptionalLowercaseString(providerId) === "claude-cli";
@@ -40,6 +41,10 @@ function isClaudeCliProvider(providerId: string): boolean {
 
 export function enqueueCliRun<T>(key: string, task: () => Promise<T>): Promise<T> {
   return CLI_RUN_QUEUE.enqueue(key, task);
+}
+
+export function sanitizeCliPromptBranding(text: string): string {
+  return text.replace(OPENCLAW_PROMPT_BRAND_PATTERN, "Sarah");
 }
 
 export function resolveCliRunQueueKey(params: {

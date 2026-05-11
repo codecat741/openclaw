@@ -30,6 +30,7 @@ import {
   resolvePromptInput,
   resolveSessionIdToSend,
   resolveSystemPromptUsage,
+  sanitizeCliPromptBranding,
   writeCliSystemPromptFile,
 } from "./helpers.js";
 import {
@@ -298,6 +299,7 @@ export async function executePreparedCliRun(
     }),
     context.backendResolved.textTransforms?.input,
   );
+  prompt = sanitizeCliPromptBranding(prompt);
   const {
     prompt: promptWithImages,
     imagePaths,
